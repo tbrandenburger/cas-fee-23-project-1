@@ -1,0 +1,19 @@
+{
+  "name": "cas-fee-23-project-1",
+  "version": "1.0.0",
+  "description": "CAS FEE 23 Project 1 - Todo App",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tbrandenburger/cas-fee-23-project-1.git"
+  },
+  "author": "Thomas Brandenburger",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tbrandenburger/cas-fee-23-project-1/issues"
+  },
+  "homepage": "https://github.com/tbrandenburger/cas-fee-23-project-1#readme"
+}
