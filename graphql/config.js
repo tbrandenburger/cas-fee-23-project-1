@@ -1,12 +1,10 @@
 const graphql = require("graphql");
 const sqlite3 = require('sqlite3').verbose();
 const database = new sqlite3.Database("./database/todos.db");
-const {GraphQLObjectType, GraphQLString, GraphQLSchema} = graphql;
+const {GraphQLObjectType, GraphQLSchema, GraphQLList} = graphql;
 
-
-
-const ContactType = GraphQLObjectType({
-    name: "Contact",
+const TodoType = new GraphQLObjectType({
+    name: "todos",
     fields: {
         id: { type: graphql.GraphQLID },
         title: { type: graphql.GraphQLString },
@@ -14,11 +12,11 @@ const ContactType = GraphQLObjectType({
     }
 });
 
-const queryType = GraphQLObjectType({
+const queryType = new GraphQLObjectType({
     name: 'Query',
     fields: {
-        contacts: {
-            type: graphql.GraphQLList(ContactType),
+        todos: {
+            type: new GraphQLList(TodoType),
             resolve: (root, args, context, info) => {
                 return new Promise((resolve, reject) => {
 
@@ -32,8 +30,8 @@ const queryType = GraphQLObjectType({
 
             }
         },
-        contact: {
-            type: ContactType,
+        todo: {
+            type: TodoType,
             args: {
                 id: {
                     type: new graphql.GraphQLNonNull(graphql.GraphQLID)
@@ -56,11 +54,11 @@ const queryType = GraphQLObjectType({
     }
 });
 
-const mutationType = GraphQLObjectType({
+const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
-        createContact: {
-            type: ContactType,
+        createTodo: {
+            type: TodoType,
             args: {
                 title: {
                     type: new graphql.GraphQLNonNull(graphql.GraphQLString)
@@ -73,8 +71,10 @@ const mutationType = GraphQLObjectType({
                 title,
                 description
             }) => {
+
                 return new Promise((resolve, reject) => {
-                    database.run('INSERT INTO todos (title, description) VALUES (?,?,?);', [title, description], (err) => {
+                    console.log(title);
+                    database.run('INSERT INTO todos (title, description) VALUES (?,?);', [title, description], (err) => {
                         if (err) {
                             reject(null);
                         }
@@ -91,7 +91,7 @@ const mutationType = GraphQLObjectType({
 
             }
         },
-        updateContact: {
+        updateTodo: {
             type: graphql.GraphQLString,
             args: {
                 id: {
@@ -110,17 +110,17 @@ const mutationType = GraphQLObjectType({
                 description
             }) => {
                 return new Promise((resolve, reject) => {
-                    database.run('UPDATE contacts SET title = (?), description = (?) WHERE id = (?);', [title, description, id], (err) => {
+                    database.run('UPDATE todos SET title = (?), description = (?) WHERE id = (?);', [title, description, id], (err) => {
                         if (err) {
                             reject(err);
                         }
-                        resolve(`Contact #${id} updated`);
+                        resolve(`Todo #${id} updated`);
 
                     });
                 })
             }
         },
-        deleteContact: {
+        deleteTodo: {
             type: graphql.GraphQLString,
             args: {
                 id: {
@@ -131,11 +131,11 @@ const mutationType = GraphQLObjectType({
                 id
             }) => {
                 return new Promise((resolve, reject) => {
-                    database.run('DELETE from contacts WHERE id =(?);', [id], (err) => {
+                    database.run('DELETE from todos WHERE id =(?);', [id], (err) => {
                         if (err) {
                             reject(err);
                         }
-                        resolve(`Contact #${id} deleted`);
+                        resolve(`Todo #${id} deleted`);
 
                     });
                 })
@@ -145,7 +145,7 @@ const mutationType = GraphQLObjectType({
     }
 });
 
-const schema = GraphQLSchema({
+const schema = new GraphQLSchema({
     query: queryType,
     mutation: mutationType
 });
