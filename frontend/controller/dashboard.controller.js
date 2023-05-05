@@ -1,10 +1,10 @@
 "use strict";
-$(document).ready(function(){
+$(document).ready(function () {
     App.DashboardController = {
 
         template: 'dashboard',
 
-        init: function() {
+        init: function () {
 
             /* if (localStorage.getItem('noteShowFinish') !== null){
                 App.ViewController.showFinish = localStorage.getItem('noteShowFinish');
@@ -13,10 +13,10 @@ $(document).ready(function(){
             this.getAllNotes();
         },
 
-        getAllNotes: function () {
-            var self = this;
-
-            console.log('getallnotes')
+        getAllNotes: async function () {
+            const self = this;
+            const result = await App.NoteServices.getAllNotes();
+            console.log('getallnotest', result);
         }
     }
 });

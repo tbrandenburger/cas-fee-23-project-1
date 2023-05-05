@@ -41,7 +41,6 @@ var App = {
             App.DashboardController.init();
         },
 
-
     },
 
 
