@@ -1,16 +1,30 @@
 "use strict";
-$(document).ready(function(){
+$(document).ready(function () {
     App.NoteServices = {
 
-        apiRoot: 'http://localhost:3000',
+        apiRoot: 'http://localhost:3000/graphql',
 
-        getAllNotes: async function (){
-
-            const response = await fetch(this.apiRoot + '/notes.json');
+        getAllNotes: async function () {
+            const response = await fetch(this.apiRoot, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: `
+                        query { todos {
+                            title,
+                            description
+                          }
+                        }
+                    `,
+                    variables: {
+                        now: new Date().toISOString(),
+                    },
+                }),
+            })
             const jsonData = await response.json();
-            console.log(jsonData);
             return jsonData
-
         }
     };
 });
