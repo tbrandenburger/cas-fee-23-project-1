@@ -33,6 +33,12 @@ var App = {
         // This method is called after the application is initialized completely
         show: function () {
             console.log('show app');
+            this.showDashboard();
+        },
+
+        // Open the Dashboard and initialize it
+        showDashboard: function () {
+            App.DashboardController.init();
         },
 
 
