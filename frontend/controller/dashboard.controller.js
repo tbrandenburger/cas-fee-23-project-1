@@ -1,26 +1,20 @@
-"use strict";
+'use strict';
 $(document).ready(function () {
-    App.DashboardController = {
+  App.DashboardController = {
 
-        template: 'dashboard',
+    template: 'dashboard',
 
-        init: function () {
+    init: function () {
+      /* if (localStorage.getItem('noteShowFinish') !== null){
+        App.ViewController.showFinish = localStorage.getItem('noteShowFinish');
+      } */
 
-            /* if (localStorage.getItem('noteShowFinish') !== null){
-                App.ViewController.showFinish = localStorage.getItem('noteShowFinish');
-            } */
+      this.getAllNotes();
+    },
 
-            this.getAllNotes();
-        },
-
-        getAllNotes: async function () {
-            const self = this;
-            const result = await App.NoteServices.getAllNotes();
-            console.log('getallnotest', result);
-        }
+    getAllNotes: async function () {
+      const result = await App.NoteServices.getAllNotes();
+      console.log('getallnotest', result);
     }
+  };
 });
-
-
-
-
