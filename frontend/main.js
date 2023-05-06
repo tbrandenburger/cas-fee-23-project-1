@@ -4,7 +4,7 @@ const App = {
     // View controller members
     locale: 'de-DE',
     translations: {},
-    notes: [],
+    todos: [],
     sort: 'dueDateDesc',
     showFinish: false,
     importances: ['1', '2', '3', '4', '5'],
@@ -20,10 +20,41 @@ const App = {
 
     // Init all required settings for the app
     init: function () {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve('foo');
-        }, 300);
+      const self = this;
+
+      if (localStorage.getItem('noteSelectedStyle') !== null) {
+        this.style = localStorage.getItem('noteSelectedStyle');
+      }
+      if (localStorage.getItem('noteSortOrder') !== null) {
+        this.sort = localStorage.getItem('noteSortOrder');
+      }
+      if (localStorage.getItem('noteShowFinish') !== null) {
+        this.showFinish = localStorage.getItem('noteShowFinish');
+      }
+
+      // handlebar init - register handlebar helpers
+      initHandlebars(this);
+      // set default style
+      this.setStyle(this.style);
+
+      // promises calls to handly asyncs calls
+      return $.when(this.getLocale(this.locale)).done(function (json) {
+        self.translations = json;
+
+        return true;
+      });
+    },
+
+    setStyle: function (style) {
+      localStorage.setItem('noteSelectedStyle', style);
+      const styleLink = 'css/' + style + '.css';
+      $('#stylesheet-include').attr('href', styleLink);
+    },
+
+    // Get the translation json file based on the active locale
+    getLocale: function (locale) {
+      return $.getJSON('/locale/' + locale + '.json', function (json) {
+        return json;
       });
     },
 
@@ -37,6 +68,46 @@ const App = {
     // Open the Dashboard and initialize it
     showDashboard: function () {
       App.DashboardController.init();
+    },
+
+    compileHandlebar: function (templateName, data) {
+      // Add the list of possible importance values to the data object
+      data.importances = this.importances;
+      data.styles = this.styles;
+
+
+
+      // Attached Handlebar function, that returns the compiled version of a specific handlebar template
+      Handlebars.getTemplate = function (templateName, data) {
+        if (Handlebars.templates === undefined || Handlebars.templates[templateName] === undefined) {
+          $.ajax({
+            url: '/template/' + templateName + '.hbs',
+            success: function (handlebarTemplate) {
+              if (Handlebars.templates === undefined) {
+                Handlebars.templates = {};
+              }
+              Handlebars.templates[name] = Handlebars.compile(handlebarTemplate);
+            },
+            async: false
+          });
+        }
+
+        return Handlebars.templates[name];
+      };
+      // Call the previously attached Handlebar method
+      const compiledTemplate = Handlebars.getTemplate(templateName, data);
+
+      // Create the template data based on the input data + translations
+      const templateData = {
+        data,
+        translations: this.translations
+      };
+
+      console.log('templateData', templateData);
+      // Get the html code of the template
+      const renderedTemplate = compiledTemplate(templateData);
+
+      return renderedTemplate;
     }
 
   },
@@ -45,9 +116,9 @@ const App = {
   init: function () {
     // Init the controller
     $.when(App.ViewController.init()).done(function (loaded) {
-      // Show the view after init the app
-      App.ViewController.show();
-    }
+        // Show the view after init the app
+        App.ViewController.show();
+      }
     );
   }
 };

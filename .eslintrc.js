@@ -7,6 +7,7 @@ module.exports = {
     $: 'readonly'
   },
   rules: {
-    'prefer-promise-reject-errors': ['off', 'always']
+    'prefer-promise-reject-errors': ['off', 'always'],
+    'no-undef': ['off', 'always']
   }
 };

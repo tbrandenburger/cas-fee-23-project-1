@@ -11,19 +11,20 @@ $(document).ready(function () {
         },
         body: JSON.stringify({
           query: `
-                        query { todos {
-                            title,
-                            description
-                          }
-                        }
-                    `,
+            query {
+              todos {
+                  title,
+                  description
+                }
+            }
+          `,
           variables: {
             now: new Date().toISOString()
           }
         })
       });
-      const jsonData = await response.json();
-      return jsonData;
+
+      return await response.json();
     }
   };
 });
