@@ -2,13 +2,18 @@ const graphql = require('graphql');
 const sqlite3 = require('sqlite3').verbose();
 const database = new sqlite3.Database('./database/todos.db');
 const { GraphQLObjectType, GraphQLSchema, GraphQLList } = graphql;
+const { dateTimeScalar } = require('./datetime');
 
 const TodoType = new GraphQLObjectType({
   name: 'todos',
   fields: {
     id: { type: graphql.GraphQLID },
     title: { type: graphql.GraphQLString },
-    description: { type: graphql.GraphQLString }
+    description: { type: graphql.GraphQLString },
+    importance: { type: graphql.GraphQLInt },
+    dueDate: { type: dateTimeScalar },
+    createDate: { type: dateTimeScalar },
+    finishDate: { type: dateTimeScalar }
   }
 });
 
@@ -62,15 +67,31 @@ const mutationType = new GraphQLObjectType({
         },
         description: {
           type: new graphql.GraphQLNonNull(graphql.GraphQLString)
+        },
+        importance: {
+          type: graphql.GraphQLInt
+        },
+        dueDate: {
+          type: new graphql.GraphQLNonNull(dateTimeScalar)
+        },
+        createDate: {
+          type: new graphql.GraphQLNonNull(dateTimeScalar)
+        },
+        finishDate: {
+          type: dateTimeScalar
         }
       },
       resolve: (root, {
         title,
-        description
+        description,
+        importance,
+        dueDate,
+        createDate,
+        finishDate
       }) => {
         return new Promise((resolve, reject) => {
           console.log(title);
-          database.run('INSERT INTO todos (title, description) VALUES (?,?);', [title, description], (err) => {
+          database.run('INSERT INTO todos (title, description, importance, dueDate, createDate, finishDate) VALUES (?,?,?,?,?,?);', [title, description, importance, dueDate, createDate, finishDate], (err) => {
             if (err) {
               reject(null);
             }
@@ -78,7 +99,11 @@ const mutationType = new GraphQLObjectType({
               resolve({
                 id: row.id,
                 title,
-                description
+                description,
+                importance,
+                dueDate,
+                createDate,
+                finishDate
               });
             });
           });
@@ -96,15 +121,31 @@ const mutationType = new GraphQLObjectType({
         },
         description: {
           type: new graphql.GraphQLNonNull(graphql.GraphQLString)
+        },
+        importance: {
+          type: graphql.GraphQLInt
+        },
+        dueDate: {
+          type: dateTimeScalar
+        },
+        createDate: {
+          type: dateTimeScalar
+        },
+        finishDate: {
+          type: dateTimeScalar
         }
       },
       resolve: (root, {
         id,
         title,
-        description
+        description,
+        importance,
+        dueDate,
+        createDate,
+        finishDate
       }) => {
         return new Promise((resolve, reject) => {
-          database.run('UPDATE todos SET title = (?), description = (?) WHERE id = (?);', [title, description, id], (err) => {
+          database.run('UPDATE todos SET title = (?), description = (?), importance = (?), dueDate = (?), createDate = (?), finishDate = (?) WHERE id = (?);', [title, description, importance, dueDate, createDate, finishDate, id], (err) => {
             if (err) {
               reject(err);
             }

@@ -15,7 +15,11 @@ const createTodosTable = () => {
         CREATE TABLE IF NOT EXISTS todos (
         id INTEGER PRIMARY KEY,
         title TEXT,
-        description TEXT
+        description TEXT,
+        importance INTEGER,
+        dueDate REAL,
+        createDate REAL,
+        finishDate REAL
         )`;
   return database.run(query);
 };
