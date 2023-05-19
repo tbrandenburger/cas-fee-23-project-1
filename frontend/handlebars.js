@@ -4,14 +4,14 @@ function initHandlebars (viewController) {
   const registerHelper = function (viewController) {
     Handlebars.registerHelper('dateFormatter', function (utcDateString) {
       if (utcDateString && utcDateString.length) {
-        const utcDateString = Handlebars.Utils.escapeExpression(utcDateString);
+        const utcDateStringEsc = Handlebars.Utils.escapeExpression(utcDateString);
 
-        const utcDate = new Date(utcDateString);
+        const utcDate = new Date(utcDateStringEsc);
 
         const hours = utcDate.getHours();
 
         if (isNaN(hours)) {
-          return utcDateString;
+          return utcDateStringEsc;
         }
 
         const minutes = utcDate.getMinutes();
@@ -119,7 +119,7 @@ function initHandlebars (viewController) {
     Handlebars.registerHelper('getNoteDetailTitle', function () {
       let returnString = '';
 
-      if (App.NoteController.mode == 'edit') {
+      if (App.NoteController.mode === 'edit') {
         returnString = viewController.translations.editNoteTitle;
       } else {
         returnString = viewController.translations.createNoteTitle;

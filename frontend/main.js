@@ -61,8 +61,13 @@ const App = {
     // Show the page desired based on the action url parameter
     // This method is called after the application is initialized completely
     show: function () {
-      console.log('show app');
-      this.showDashboard();
+      if (this.getQueryVariable('action') === 'edit') {
+        this.showNoteEdit(this.getQueryVariable('id'));
+      } else if (this.getQueryVariable('action') === 'add') {
+        this.showNoteAdd();
+      } else {
+        this.showDashboard();
+      }
     },
 
     // Open the Dashboard and initialize it
@@ -70,11 +75,33 @@ const App = {
       App.DashboardController.init();
     },
 
+    // Open the note edit form and initialize it
+    showNoteEdit: function (id) {
+      console.log('showNoteEdit');
+      App.NoteController.mode = 'edit';
+      App.NoteController.getNote(id);
+    },
+
+    // Open the note edit form and initialize it
+    showNoteAdd: function () {
+      console.log('showNoteAdd');
+      App.NoteController.mode = 'add';
+
+      const data = {
+        note: { 'id': 0 },
+        message: {
+          text: '',
+          type: ''
+        }
+      };
+
+      App.NoteController.renderView(data);
+    },
+
     compileHandlebar: function (templateName, data) {
       // Add the list of possible importance values to the data object
       data.importances = this.importances;
       data.styles = this.styles;
-
 
 
       // Attached Handlebar function, that returns the compiled version of a specific handlebar template
@@ -112,6 +139,12 @@ const App = {
 
   },
 
+  loadHelpers: function () {
+    for (var helperFunction in Helpers) {
+      App.ViewController[helperFunction] = Helpers[helperFunction];
+    }
+  },
+
   // Init method for the app
   init: function () {
     // Init the controller
@@ -125,3 +158,4 @@ const App = {
 
 // initialize the app
 App.init();
+App.loadHelpers();
